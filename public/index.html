@@ -8,9 +8,6 @@
 		<div class="chat">
 			<input type="text" class="chat-name" placeholder="Enter your name">
 			<div class="chat-messages">
-				<div class="chat-message">
-					
-				</div>
 			</div>
 			<textarea class="chat-textarea" placeholder="Type your message"></textarea>
 			<div class="chat-status">
@@ -24,8 +21,20 @@
 				var getNode = function(s){
 					return document.querySelector(s);
 				},
+				status = getNode('.chat-status'),
+				messages = getNode('.chat-messages'),
 				textarea = getNode('.chat-textarea'),
-				chatName = getNode('.chat-name');
+				chatName = getNode('.chat-name'),
+				statusDefault = status.textContent,	
+				setStatus = function(s){
+					status.textContent = s;
+					if(s !== statusDefault){
+						var delay = setTimeout(function(){
+							setStatus(statusDefault);
+							clearInterval(delay);
+						},3000);
+					}
+				};	
 				
 				try{
 					var socket = io.connect('http://104.236.10.215:3000/');
@@ -34,6 +43,29 @@
 				}
 				
 				if(socket !== undefined){
+					
+					socket.on('status',function(data){
+						var status = typeof data === 'object' ? data.message : data;
+						setStatus(status);
+						
+						if(data.clear === true){
+							textarea.value = '';
+						}
+					});
+					
+					socket.on('output',function(data){
+						if(data.length){
+							for(var x = 0; x < data.length;x++){
+								var message = document.createElement('div');
+								message.setAttribute('class','chat-message');
+								message.textContent = data[x].name + ': ' + data[x].message;
+								
+								messages.appendChild(message);
+								messages.insertBefore(message,messages.firstChild);
+							}
+						}
+					});
+					
 					textarea.addEventListener('keydown',function(e){
 						var self = this,
 							name = chatName.value;	
