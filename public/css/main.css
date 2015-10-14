@@ -27,14 +27,14 @@ input{
 
 .chat-name{
 	width:100%;
-	padding:20px;
+	padding:10px;
 	border-bottom:0;
 	margin:0;
 }
 
 .chat-textarea{
 	width:100%;
-	padding:20px;
+	padding:10px;
 	margin:0;
 	border-top:0;
 	max-width:100%;
