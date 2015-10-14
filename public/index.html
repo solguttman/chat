@@ -19,5 +19,38 @@
 		</div>
 		
 		<script src="http://104.236.10.215:3000/socket.io/socket.io.js"></script>
+		<script>
+			(function(){
+				var getNode = function(s){
+					return document.querySelector(s);
+				},
+				textarea = getNode('.chat-textarea'),
+				chatName = getNode('.chat-name');
+				
+				try{
+					var socket = io.connect('http://104.236.10.215:3000/');
+				}catch(e){
+					
+				}
+				
+				if(socket !== undefined){
+					textarea.addEventListener('keydown',function(e){
+						var self = this,
+							name = chatName.value;	
+						
+						if(e.which === 13 && e.shiftKey === false){
+							socket.emit('input',{
+								name:name,
+								message:self.value
+							});
+							
+							e.preventDefault();
+						}
+						
+					});
+				}
+				
+			})();
+		</script>
 	</body>
 </html>
