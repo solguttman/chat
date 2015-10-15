@@ -1,88 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="app">
 	<head>
 		<title>Chat</title>
 		<link rel="stylesheet" href="../css/main.css">
 	</head>
 	<body>
-		<div class="chat">
-			<input type="text" class="chat-name" placeholder="Enter your name">
+		<div class="chat" ng-controller="ChatCtrl">
+			<input type="text" class="chat-name" placeholder="Enter your name" ng-model="chatName">
 			<div class="chat-messages">
+				<div class="chat-message" ng-repeat="msg in messages" ng-cloak>
+					{{msg.name}}: {{msg.message}}
+				</div>
 			</div>
-			<textarea class="chat-textarea" placeholder="Type your message"></textarea>
+			<textarea class="chat-textarea" placeholder="Type your message" ng-model="chatMsg" send-msg></textarea>
 			<div class="chat-status">
-				Status: <span>Idle</span>
+				Status: <span>{{status}}</span>
 			</div>
 		</div>
 		
 		<script src="http://104.236.10.215:3000/socket.io/socket.io.js"></script>
-		<script>
-			(function(){
-				var getNode = function(s){
-					return document.querySelector(s);
-				},
-				status = getNode('.chat-status'),
-				messages = getNode('.chat-messages'),
-				textarea = getNode('.chat-textarea'),
-				chatName = getNode('.chat-name'),
-				statusDefault = status.textContent,	
-				setStatus = function(s){
-					status.textContent = s;
-					if(s !== statusDefault){
-						var delay = setTimeout(function(){
-							setStatus(statusDefault);
-							clearInterval(delay);
-						},3000);
-					}
-				};	
-				
-				try{
-					var socket = io.connect('http://104.236.10.215:3000/');
-				}catch(e){
-					
-				}
-				
-				if(socket !== undefined){
-					
-					socket.on('status',function(data){
-						var status = typeof data === 'object' ? data.message : data;
-						setStatus(status);
-						
-						if(data.clear === true){
-							textarea.value = '';
-						}
-					});
-					
-					socket.on('output',function(data){
-						if(data.length){
-							for(var x = 0; x < data.length;x++){
-								var message = document.createElement('div');
-								message.setAttribute('class','chat-message');
-								message.textContent = data[x].name + ': ' + data[x].message;
-								
-								messages.appendChild(message);
-								messages.insertBefore(message,messages.firstChild);
-							}
-						}
-					});
-					
-					textarea.addEventListener('keydown',function(e){
-						var self = this,
-							name = chatName.value;	
-						
-						if(e.which === 13 && e.shiftKey === false){
-							socket.emit('input',{
-								name:name,
-								message:self.value
-							});
-							
-							e.preventDefault();
-						}
-						
-					});
-				}
-				
-			})();
-		</script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+		<script src="controllers/controller.js"></script>
 	</body>
 </html>
